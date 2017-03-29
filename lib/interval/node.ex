@@ -14,8 +14,9 @@ defmodule Interval.Node do
   data: nil,  # interval low, interval high
   left: nil, 
   right: nil
+
   
-  @spec info(struct) :: tuple
+  @doc "Provides dump of node info to be used in Inspect protocol implementation"
   def info(%Node{} = node) do {node.data, node.max, node.left, node.right} end
   
   

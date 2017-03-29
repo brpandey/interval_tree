@@ -41,8 +41,7 @@ defmodule Interval.Tree do
   # Traverse - O(n)
 
 
-  # Traverse implements an inorder traversal
-
+  @doc "Traverse implements an inorder traversal"
   def traverse(%Tree{root: node}) do
     list = do_traverse(node, [])
 
@@ -51,9 +50,12 @@ defmodule Interval.Tree do
     Enum.reverse(list)
   end
 
+  # Private helper functions which assist in the recursion
 
+  # Matches case where node is nil
   defp do_traverse(nil, list), do: list
 
+  # Matches case where node is non-empty
   defp do_traverse(%Node{data: interval, left: left, right: right}, list)
   when is_list(list) do
 
@@ -72,15 +74,18 @@ defmodule Interval.Tree do
   # Search - O(min(n, k log n)) where k is the number of overlapping intervals
 
 
-  # Search whether a given interval key overlaps
-  # with any interval nodes, returns ALL overlaps
+  @doc """
+  Search whether a given interval key overlaps
+  with any interval nodes, returns ALL overlaps
+  """
 
   def search(%Tree{root: node}, %Interval{} = key) do
     do_search(node, key, MapSet.new)
   end
 
+  # Private helper functions which assist in the recursion
 
-  # search overlaps base case
+  # search base case matching nil node
   def do_search(nil, %Interval{}, acc), do: acc
 
   def do_search(%Node{data: %Interval{} = t1, left: t1_left, right: t1_right},
@@ -129,8 +134,11 @@ defmodule Interval.Tree do
   ##############################################################################
   # Insert - O(log n)
 
+  @doc """
+  Public insert method, inserts interval value into the interval key using
+  the low interval node value to maintain sorted order
+  """
 
-  # Public insert method
   def insert(%Tree{root: node} = tree, %Interval{} = value) do
     {node, _max} = do_insert(node, value)
     
@@ -138,8 +146,9 @@ defmodule Interval.Tree do
     %Tree{tree | root: node, size: tree.size + 1}
   end
 
+  # Private helper functions which assist in the recursion
   
-  # Base Case - empty tree - pattern match on empty root
+  # Base Case - empty tree - pattern match on empty node
   defp do_insert(nil, %Interval{} = interval) do
     node = %Node{data: interval, max: interval.finish}
     {node, node.max}
@@ -191,8 +200,7 @@ defmodule Interval.Tree do
   end
 
     
-
-  @spec info(struct) :: term
+  @doc "Provides dump of tree info to be used in Inspect protocol implementation"
   def info(%Tree{} = tree) do {tree.size, tree.root} end
   
 

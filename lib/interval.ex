@@ -10,6 +10,10 @@ defmodule Interval do
   end
 
 
+  @doc """
+  Handles all the interval overlap cases for two intervals.
+  Note: The interval order doesn't matter, as to which timeslot is t1 or t2
+  """
   def overlap?(%Interval{} = t1, %Interval{} = t2) do
     
     # This handles these cases
@@ -43,8 +47,7 @@ defmodule Interval do
   end
 
 
-
-  @spec info(struct) :: Range.t
+  @doc "Provides dump of interval info to be used in Inspect protocol implementation"
   def info(%Interval{} = round) do round.start..round.finish end
 
 
