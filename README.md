@@ -7,19 +7,20 @@ Interval Tree
 
 * Inspecting the interval tree structure shows a functional looking data structure
 
-* The first term is the tree size.  The next is the root node.  The first term in 
+* The first term is the tree size e.g 10.  The next is the root node.  The first term in 
   the root tuple is the interval e.g. 16..21, the second is the max value e.g. 30, 
-  and the second and three are nested tuples which comprise the left and right 
-  subtrees respectively..
+  and the third and fourth are nested tuples which comprise the left and right 
+  subtrees respectively.
+
+* Operations
+  * traverse - O(n)
+  * insert - O(log n) where n is the number of nodes in the tree at insertion time
+  * search - O(min(n, k log n)) where k is the number of overlapping intervals
 
 
 ## Tree Output
 
 ```elixir
-
-$ iex -S mix
-iex(1)> Driver.run
-
 
 IntervalTree<{10, {16..21, 30, {8..9, 23, {5..8, 10, {0..3, 3, nil, nil}, {6..10, 10, nil, nil}}, 
 {15..23, 23, nil, nil}}, {25..30, 30, {17..19, 20, nil, {19..20, 20, nil, nil}}, 
@@ -27,7 +28,7 @@ IntervalTree<{10, {16..21, 30, {8..9, 23, {5..8, 10, {0..3, 3, nil, nil}, {6..10
 
 ```
 
-The interval tree dump is translated to this tree arrangment with the size being 10.
+The interval tree dump is translated to this tree arrangment:
 
 ```elixir
                                             {16..21, 30}
@@ -41,7 +42,13 @@ The interval tree dump is translated to this tree arrangment with the size being
             {0..3, 3}      {6..10, 10}                            {19..20, 20}
 ```
 
+### Example Run 1
+
 ```
+
+$ iex -S mix
+iex(1)> Driver.run ...
+
 Searching for interval
 20..26
 
@@ -61,7 +68,7 @@ Here's the inorder traversal output
 Overlap search returns #MapSet<[16..21, 15..23, 25..30]>
 ```
 
-Here's another sample run
+### Example Run 2
 
 ```elixir
 
