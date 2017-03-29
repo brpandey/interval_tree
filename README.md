@@ -21,7 +21,9 @@ $ iex -S mix
 iex(1)> Driver.run
 
 
-#IntervalTree<{10, {16..21, 30, {8..9, 23, {5..8, 10, {0..3, 3, nil, nil}, {6..10, 10, nil, nil}}, {15..23, 23, nil, nil}}, {25..30, 30, {17..19, 20, nil, {19..20, 20, nil, nil}}, {26..27, 27, nil, nil}}}}>
+#IntervalTree<{10, {16..21, 30, {8..9, 23, {5..8, 10, {0..3, 3, nil, nil}, {6..10, 10, nil, nil}}, 
+{15..23, 23, nil, nil}}, {25..30, 30, {17..19, 20, nil, {19..20, 20, nil, nil}}, 
+{26..27, 27, nil, nil}}}}>
 
 ```
 
@@ -66,7 +68,9 @@ Here's another sample run
 iex(2)> Driver.run({5,6})
 Interval tree dump and inorder traversal:
 
-#IntervalTree<{10, {16..21, 30, {8..9, 23, {5..8, 10, {0..3, 3, nil, nil}, {6..10, 10, nil, nil}}, {15..23, 23, nil, nil}}, {25..30, 30, {17..19, 20, nil, {19..20, 20, nil, nil}}, {26..27, 27, nil, nil}}}}>
+#IntervalTree<{10, {16..21, 30, {8..9, 23, {5..8, 10, {0..3, 3, nil, nil}, {6..10, 10, nil, nil}}, 
+{15..23, 23, nil, nil}}, {25..30, 30, {17..19, 20, nil, {19..20, 20, nil, nil}}, 
+{26..27, 27, nil, nil}}}}>
 
 0..3
 5..8
