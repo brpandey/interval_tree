@@ -13,8 +13,8 @@ defmodule Driver do
 
 
   def clr_run(key \\ {19,20}) when is_tuple(key) do
-    ## Create interval tree shown in above figure
-    
+    ## Create interval tree closely resembling clrs algorithms interval tree page figure
+
     intervals = [{16, 21}, {8, 9}, {15, 23}, {25, 30}, {17, 19}, {5,8}, {6,10}, {0,3}, {26, 27}, {19, 20}]
     
     tree = create_tree(intervals)
@@ -26,7 +26,7 @@ defmodule Driver do
 
 
   def geeks_run(key \\ {16,25}) when is_tuple(key) do
-    ## Create interval tree shown in above figure
+    ## Create interval tree shown in geeksforgeeks interval tree page figure
     
     intervals = [{15, 20}, {10, 30}, {17, 19}, {5, 20}, {12, 15}, {30, 40}]
     

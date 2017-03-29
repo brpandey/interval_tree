@@ -11,12 +11,14 @@ defmodule Interval.Tree do
   The left and right child nodes of the current node are stored in the 
   left and right fields respectively
 
-  Thanks to geeksforgeeks and the CLR algorithms textbook 
+  Thanks to geeksforgeeks.org and the CLR algorithms textbook 
   for Interval Tree descriptions and implementations
 
   http://www.geeksforgeeks.org/interval-tree/
   https://en.wikipedia.org/wiki/Interval_tree#Augmented_tree
 
+
+  Implemented operations are traverse, search, and insert
   """
 
 
@@ -81,7 +83,7 @@ defmodule Interval.Tree do
   # search overlaps base case
   def do_search(nil, %Interval{}, acc), do: acc
 
-  def do_search(%Node{data: %Interval{} = t1, left: left, right: right},
+  def do_search(%Node{data: %Interval{} = t1, left: t1_left, right: t1_right},
                 %Interval{} = t2, acc) do
     
     # check if given interval key overlaps with current interval node
@@ -93,23 +95,30 @@ defmodule Interval.Tree do
     
     # recurse left and right
 
+    # NOTE: the classic overlap condition is  
+    # (t1.start < t2.finish and t1.finish > t2.start)
+
+
     # Given that the left child exists and its max is greater than
     # the interval key's start, then the key may overlap with an interval 
-    # node in the left subtree, search left!
+    # node in the left subtree, search left! 
+    # (notice this is half the classic overlap condition)
 
     acc = cond do
-      left != nil and left.max > t2.start ->
-        do_search(left, t2, acc)
+      t1_left != nil and t1_left.max > t2.start ->
+        do_search(t1_left, t2, acc)
       true -> acc
     end
-
-
+    
+    
     # If we have an "overlap" with the current node's start and the right's
     # aggregate max finish, then search the right subtree
-    
+    # (notice this pretty well resembles the classic overlap condition with the 
+    #  difference being the aggregate max term)
+
     acc = cond do
-      right != nil and t1.start < t2.finish and right.max > t2.start ->
-        do_search(right, t2, acc)
+      t1_right != nil and t1.start < t2.finish and t1_right.max > t2.start ->
+        do_search(t1_right, t2, acc)
       true -> acc
     end
     
@@ -202,7 +211,6 @@ defmodule Interval.Tree do
   end
 
 
-  
 end
 
 
