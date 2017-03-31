@@ -37,8 +37,12 @@ defmodule Interval.Tree.Test do
         |> Tree.insert(value2)
         |> Tree.insert(value3)
         |> Tree.insert(value4)
-      
-      assert "#IntervalTree<{4, {23..34, 76, nil, {26..76, 76, nil, {32..40, 40, nil, {34..36, 36, nil, nil}}}}}>" =  "#{inspect tree}"
+
+      # before avl implemented
+      # assert "#IntervalTree<{4, {23..34, 76, nil, {26..76, 76, nil, {32..40, 40, nil, {34..36, 36, nil, nil}}}}}>" =  "#{inspect tree}"
+
+      # after avl implemented
+      assert "#IntervalTree<{4, {26..76, 76, {23..34, 34, nil, nil}, {32..40, 40, nil, {34..36, 36, nil, nil}}}}>" =  "#{inspect tree}"
 
     end
 
@@ -57,7 +61,11 @@ defmodule Interval.Tree.Test do
         |> Tree.insert(value2)
         |> Tree.insert(value1)
       
-      assert "#IntervalTree<{4, {34..36, 76, {32..40, 76, {26..76, 76, {23..34, 34, nil, nil}, nil}, nil}, nil}}>" =  "#{inspect tree}"
+      # before avl implemented
+      # assert "#IntervalTree<{4, {34..36, 76, {32..40, 76, {26..76, 76, {23..34, 34, nil, nil}, nil}, nil}, nil}}>" =  "#{inspect tree}"
+
+      # after avl implemented
+      assert "#IntervalTree<{4, {32..40, 76, {26..76, 76, {23..34, 34, nil, nil}, nil}, {34..36, 36, nil, nil}}}>" =  "#{inspect tree}"
 
     end
 

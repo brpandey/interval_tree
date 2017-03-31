@@ -2,6 +2,9 @@ defmodule Interval.Tree do
   @moduledoc """
   Module stores interval data in a tree structure called an interval tree
 
+  The underlying tree implements a self-balancing AVL tree ensuring
+  all insert operations are O(log n)
+
   The tree node contains the interval data which 
   contains the start and finish times
 
@@ -22,9 +25,6 @@ defmodule Interval.Tree do
   """
 
 
-  # TODO: Tree should really be self-balancing tree like AVL or Red-Black instead of BST
-
-
   alias Interval.Tree, as: Tree
   alias Interval.Node, as: Node
 
@@ -35,6 +35,7 @@ defmodule Interval.Tree do
 
 
   def new, do: %Tree{}
+
 
 
   ##############################################################################
@@ -140,7 +141,7 @@ defmodule Interval.Tree do
   """
 
   def insert(%Tree{root: node} = tree, %Interval{} = value) do
-    {node, _max} = do_insert(node, value)
+    node = do_insert(node, value)
     
     # Update the passed back tree with the updated size
     %Tree{tree | root: node, size: tree.size + 1}
@@ -150,54 +151,233 @@ defmodule Interval.Tree do
   
   # Base Case - empty tree - pattern match on empty node
   defp do_insert(nil, %Interval{} = interval) do
-    node = %Node{data: interval, max: interval.finish}
-    {node, node.max}
+    %Node{data: interval, max: interval.finish, height: 1}
   end
 
 
   # Non-empty, traverse to left
-  defp do_insert(%Node{data: %Interval{start: low}, left: left} = node, 
+  defp do_insert(%Node{data: %Interval{start: low}, left: l, right: r} = n, 
                  %Interval{start: start_key} = interval)
   when start_key < low do
     
-    {left, max} = do_insert(left, interval)
+    # Perform normal BST insertion
+    l = do_insert(l, interval)
 
-    # If the subtree has a higher max value, store that as the new max
-    node = update_max(node, max)
+    # update the node with the updated left child,
+    # also update height and max interval
+    n = 
+      %Node{ n | left: l, height: max_height(l, r) + 1}
+      |> update_max_interval
 
-    # update the left child
-    node = %Node{node | left: left}
+    # ensure balance is maintained
+    _node = balance(n, start_key)
 
-    {node, node.max}
   end
   
   
   # Non-empty, traverse to right
-  defp do_insert(%Node{data: %Interval{start: low}, right: right} = node, 
+  defp do_insert(%Node{data: %Interval{start: low}, left: l, right: r} = n, 
                  %Interval{start: start_key} = interval)
   when start_key >= low do
     
     # recurse with right subtree
-    {right, max} = do_insert(right, interval)
+    r = do_insert(r, interval)
 
-    # If the subtree has a higher max value, store that as the new max
-    node = update_max(node, max)
+    # update the node with updated right child, 
+    # also update height and max interval
+    n = 
+      %Node{ n | right: r, height: max_height(l, r) + 1 }
+      |> update_max_interval
 
-    # update the right child
-    node = %Node{node | right: right}
+    # ensure balance is maintained
+    _node = balance(n, start_key)
 
-    {node, node.max}
   end
 
 
   ##############################################################################
-  # Helpers
+  # AVL balance and rotation helpers
 
 
-  # Helper function to update max if needed - O(h) where h is tree height
-  defp update_max(%Node{max: current} = node, max) do
-    if(max > current) do Kernel.put_in(node.max, max) else node end
+  defp balance(%Node{left: l, right: r} = node, low_key)
+  when is_integer(low_key) do
+
+    # Using height delta we determine
+    # if we need to balance the tree at this node
+    delta = height_delta(node)
+
+    # 4 cases to handle a node unbalance
+
+    _node = cond do
+      # Case 1, Left Left
+      
+      # Since the delta is greater than 1, the left subtree is higher
+      # and since low_key is less than y's start_key it was inserted on its left
+      # Hence - left left
+
+      #         z                                      y 
+      #        / \                                   /   \
+      #       y   T4      Right Rotate (z)          x      z
+      #      / \          - - - - - - - - ->      /  \    /  \ 
+      #     x   T3                               T1  T2  T3  T4
+      #    / \
+      #  T1   T2
+
+      delta > 1 and l != nil and l.data != nil and low_key < l.data.start ->
+        right_rotate(node)
+
+      
+      # Case 2, Right Right
+
+      # Since the delta is less than -1, the right subtree is higher
+      # and since the low_key is greater than y's start_key it was inserted on the right
+      # Hence - right right
+
+      #    z                                y
+      #   /  \                            /   \ 
+      #  T1   y     Left Rotate(z)       z      x
+      #      /  \   - - - - - - - ->    / \    / \
+      #     T2   x                     T1  T2 T3  T4
+      #         / \
+      #       T3  T4
+
+
+      delta < -1 and r != nil and r.data != nil and low_key >= r.data.start -> 
+        left_rotate(node)
+          
+
+      # Case 3, Left Right
+        
+      # Since the delta is greater than 1, the left subtree is higher
+      # Since the low_key is greater than in this case y's start key, the node
+      # was inserted on y's right subtree
+      # Hence - left right
+
+      #      z                               z                           x
+      #     / \                            /   \                        /  \ 
+      #    y   T4  Left Rotate (y)        x    T4  Right Rotate(z)    y      z
+      #   / \      - - - - - - - - ->    /  \      - - - - - - - ->  / \    / \
+      # T1   x                          y    T3                    T1  T2 T3  T4
+      #     / \                        / \
+      #   T2   T3                    T1   T2
+
+
+      delta > 1 and l != nil and l.data != nil and low_key >= l.data.start ->
+        %Node{node | left: left_rotate(l)} |> right_rotate
+
+
+      # Case 4, Right Left
+
+      # Since the delta is less than -1, the right subtree is higher
+      # Since the low_key is less than y's start key, the node
+      # was inserted on y's left subtree
+      # Hence - right left
+
+      #    z                            z                            x
+      #   / \                          / \                          /  \ 
+      # T1   y   Right Rotate (y)    T1   x      Left Rotate(z)   z      y
+      #     / \  - - - - - - - - ->     /  \   - - - - - - - ->  / \    / \
+      #    x   T4                      T2   y                  T1  T2  T3  T4
+      #   / \                              /  \
+      # T2   T3                           T3   T4
+
+      delta < -1 and r != nil and r.data != nil and low_key < r.data.start ->
+        %Node{node | right: right_rotate(r)} |> left_rotate
+
+
+      # Default case
+      true -> node
+    end
+
   end
+
+
+_ =  """
+  Right rotate subtree rooted at z. See following diagram
+  We rotate z (the old root) to the right leaving y as the new root
+
+  T1, T2, T3 and T4 are subtrees.
+
+         z                                      y 
+        / \                                   /   \
+       y   T4      Right Rotate (z)          x      z
+      / \          - - - - - - - - ->      /  \    /  \ 
+     x   T3                               T1  T2  T3  T4
+    / \
+  T1   T2
+
+  """
+
+  defp right_rotate(%Node{left: %Node{left: x, right: t3} = y, right: t4} = z) do
+    
+    # Perform rotation, update heights and max interval
+    z = 
+      %Node{ z | left: t3, height: max_height(t3, t4) + 1 }
+      |> update_max_interval
+
+    _y = 
+      %Node{ y | right: z, height: max_height(x, z) + 1 }
+      |> update_max_interval
+  end
+
+
+_ = """
+  Left rotate subtree rooted at z. See following diagram
+  We rotate z (the old root) to the left leaving y as the new root
+
+
+    z                                y
+   /  \                            /   \ 
+  T1   y     Left Rotate(z)       z      x
+      /  \   - - - - - - - ->    / \    / \
+     T2   x                     T1  T2 T3  T4
+         / \
+       T3  T4
+
+  """
+
+  defp left_rotate(%Node{left: t1, right: %Node{left: t2, right: x} = y} = z) do
+
+    # Perform rotation, update heights and max interval
+    z = 
+      %Node{ z | right: t2, height: max_height(t1, t2) + 1 }
+      |> update_max_interval
+
+    _y = 
+      %Node{ y | left: z, height: max_height(z, x) + 1 }
+      |> update_max_interval
+  end
+
+
+
+  ##############################################################################
+  # Max interval flag helpers
+
+  # Update max interval
+  defp update_max_interval(%Node{data: interval, left: left, right: right} = node) do
+    max = Kernel.max(do_max(left), do_max(right)) |> Kernel.max(interval.finish)
+    Kernel.put_in(node.max, max)
+  end
+
+  defp do_max(nil), do: 0
+  defp do_max(%Node{max: max}), do: max
+
+
+
+  ##############################################################################
+  # Height helpers
+
+  # Update max tree height
+  defp max_height(left, right) do
+    Kernel.max(do_height(left), do_height(right))
+  end
+
+  defp height_delta(nil), do: 0
+  defp height_delta(%Node{left: l, right: r}), do: do_height(l) - do_height(r)
+
+  defp do_height(nil), do: 0
+  defp do_height(%Node{height: height}), do: height
+
 
     
   @doc "Provides dump of tree info to be used in Inspect protocol implementation"

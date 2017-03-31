@@ -12,6 +12,7 @@ defmodule Interval.Node do
   
   struct Node {
     int max;
+    int height;
     struct Interval data;
     struct Node* left;
     struct Node* right;
@@ -22,6 +23,7 @@ defmodule Interval.Node do
   alias Interval.Node
 
   defstruct max: -1, # max interval finish value given the subtree rooted at this node
+  height: -1, # height value
   data: nil,  # interval low, interval high
   left: nil, 
   right: nil
