@@ -1,5 +1,5 @@
-Interval Tree
-=============
+Interval Tree using a self-balancing AVL
+========================================
 
 * Implements an interval tree using an augmented self-balancing AVL tree with an interval 
   as the data field and a max value tracking the interval high value in the subtree 
@@ -8,7 +8,7 @@ Interval Tree
 * Inspecting the interval tree structure shows a functional looking data structure
 
 * The first term is the tree size e.g 10.  The next is the root node.  The first term in 
-  the root tuple is the interval e.g. 16..21, the second is the max value e.g. 30, 
+  the root tuple is the interval e.g. 15..23, the second is the max value e.g. 30, 
   and the third and fourth are nested tuples which comprise the left and right 
   subtrees respectively.
 
@@ -92,6 +92,32 @@ iex(2)> Driver.run({5,6})
 Searching for interval 5..6
 Overlap search returns #MapSet<[5..8]>
 ```
+
+### Example Run 3
+
+```elixir
+
+iex(3)> tree = Driver.create_tree([{3,4}, {2,10}, {2, 24}])
+IntervalTree<{3, {2..24, 24, {2..10, 10, nil, nil}, {3..4, 4, nil, nil}}}>
+
+iex(4)> Driver.print_tree(tree)
+Interval tree dump and inorder traversal:
+
+#IntervalTree<{3, {2..24, 24, {2..10, 10, nil, nil}, {3..4, 4, nil, nil}}}>
+
+2..10
+2..24
+3..4
+
+:ok
+
+iex(5)> Driver.search_tree(tree, Interval.new({10, 20}))
+Searching for interval 10..20
+Overlap search returns #MapSet<[2..24]>
+:ok
+
+```
+
 
 ## NOTES
 

@@ -43,10 +43,10 @@ defmodule Driver do
 
 
   ##############################################################################
-  # Helpers
+  # Public Helpers
 
   # Helper to create an interval tree given a tuple list of intervals
-  defp create_tree(intervals)
+  def create_tree(intervals)
   when is_list(intervals) and is_tuple(hd(intervals)) do
 
     Enum.reduce(intervals, Tree.new, fn {start, finish}, tree_acc ->
@@ -56,7 +56,7 @@ defmodule Driver do
 
 
   # Helper to print an interval tree both as a dump and via the inorder traversal
-  defp print_tree(%Tree{} = tree) do
+  def print_tree(%Tree{} = tree) do
 
     IO.puts "Interval tree dump and inorder traversal:\n"
     IO.puts "#{inspect tree}\n"
@@ -72,7 +72,7 @@ defmodule Driver do
 
   
   # Helper to search the tree for all overlapping intervals given an interval key
-  defp search_tree(%Tree{} = tree, %Interval{} = key) do
+  def search_tree(%Tree{} = tree, %Interval{} = key) do
 
     IO.puts("Searching for interval #{inspect key}")
 

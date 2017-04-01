@@ -7,6 +7,8 @@ defmodule Interval.Node do
 
   Stores interval in data field.  Stores left and right children as well.
 
+  We keep track of the height of subtrees for AVL balancing
+
   Not too much different than the C counterpart
   (https://bitbucket.org/brpandey/c-data-structures/src)
   
