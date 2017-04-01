@@ -3,7 +3,7 @@ defmodule Interval.Tree do
   Module stores interval data in a tree structure called an interval tree
 
   The underlying tree implements a self-balancing AVL tree ensuring
-  all insert operations are O(log n)
+  all insert operations are O(log n) and that tree height is always O(log n)
 
   The tree node contains the interval data which 
   contains the start and finish times
@@ -15,9 +15,10 @@ defmodule Interval.Tree do
   left and right fields respectively
 
   Thanks to geeksforgeeks.org and the CLR algorithms textbook 
-  for Interval Tree descriptions and implementations
+  for Interval and AVL Tree descriptions and implementations
 
   http://www.geeksforgeeks.org/interval-tree/
+  http://www.geeksforgeeks.org/avl-tree-set-1-insertion/
   https://en.wikipedia.org/wiki/Interval_tree#Augmented_tree
 
 
@@ -206,7 +207,7 @@ defmodule Interval.Tree do
     # if we need to balance the tree at this node
     delta = height_delta(node)
 
-    # 4 cases to handle a node unbalance
+    # 4 cases to handle a node imbalance
 
     _node = cond do
       # Case 1, Left Left

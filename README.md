@@ -1,7 +1,7 @@
 Interval Tree
 =============
 
-* Implements an interval tree using an augmented binary search tree with an interval 
+* Implements an interval tree using an augmented self-balancing AVL tree with an interval 
   as the data field and a max value tracking the interval high value in the subtree 
   rooted at that node
 
@@ -22,24 +22,24 @@ Interval Tree
 
 ```elixir
 
-IntervalTree<{10, {16..21, 30, {8..9, 23, {5..8, 10, {0..3, 3, nil, nil}, {6..10, 10, nil, nil}}, 
-{15..23, 23, nil, nil}}, {25..30, 30, {17..19, 20, nil, {19..20, 20, nil, nil}}, 
-{26..27, 27, nil, nil}}}}>
+IntervalTree<{10, {15..23, 30, {6..10, 10, {5..8, 8, {0..3, 3, nil, nil}, nil}, 
+{8..9, 9, nil, nil}}, {17..19, 30, {16..21, 21, nil, nil}, {25..30, 30, 
+{19..20, 20, nil, nil}, {26..27, 27, nil, nil}}}}}>
 
 ```
 
 The interval tree dump is translated to this tree arrangment:
 
 ```elixir
-                                            {16..21, 30}
-                                        /                  \
-                            {8..9, 23}                        {25..30, 30}
-                            /        \                        /          \
-                           /          \                      /            \
-                  {5..8, 10}          {15..23, 23}    {17..19, 20}        {26..27, 27}
-                  /        \                                     \
-                 /          \                                     \
-            {0..3, 3}      {6..10, 10}                            {19..20, 20}
+                                      {15..23, 30}
+                                  /                  \
+                      {6..10, 10}                        {17..19, 30}
+                      /        \                         /          \
+                     /          \                       /            \
+              {5..8, 8}        {8..9, 9}       {16..21, 21}     {25..30, 30}
+              /                                                 /         \
+             /                                                 /           \
+      {0..3, 3}                                      {19..20, 20}         {26..27, 27}
 ```
 
 ### Example Run 1
@@ -47,7 +47,9 @@ The interval tree dump is translated to this tree arrangment:
 ```
 
 $ iex -S mix
-iex(1)> Driver.run ...
+iex(1)> Driver.run 
+
+...
 
 Searching for interval
 20..26
@@ -72,12 +74,9 @@ Overlap search returns #MapSet<[16..21, 15..23, 25..30]>
 
 ```elixir
 
-iex(2)> Driver.run({5,6})
-Interval tree dump and inorder traversal:
+iex(2)> Driver.run({5,6}) 
 
-IntervalTree<{10, {16..21, 30, {8..9, 23, {5..8, 10, {0..3, 3, nil, nil}, {6..10, 10, nil, nil}}, 
-{15..23, 23, nil, nil}}, {25..30, 30, {17..19, 20, nil, {19..20, 20, nil, nil}}, 
-{26..27, 27, nil, nil}}}}>
+...
 
 0..3
 5..8
@@ -95,8 +94,6 @@ Overlap search returns #MapSet<[5..8]>
 ```
 
 ## NOTES
-
-#### TODO: Tree should really be self-balancing tree like AVL or Red-Black instead of BST
 
 
 It was interesting to see how the one dimensional check overlap problem
@@ -136,13 +133,15 @@ Here are the relevant code bits that pertain to this from lib/tree.ex
 
 ```
 
+AVL trees rock! Especially in Elixir :heart_eyes:
 
 ## Thanks!
 
 Thanks to geeksforgeeks.org and the CLR algorithms textbook 
-for Interval Tree descriptions and implementations
+for Interval and AVL Tree descriptions and implementations
 
 * http://www.geeksforgeeks.org/interval-tree/
+* http://www.geeksforgeeks.org/avl-tree-set-1-insertion/
 * https://en.wikipedia.org/wiki/Interval_tree#Augmented_tree
 
 Bibek Pandey
