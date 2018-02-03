@@ -11,7 +11,7 @@ defmodule Interval.Node do
 
   Not too much different than the C counterpart
   (https://bitbucket.org/brpandey/c-data-structures/src)
-  
+
   struct Node {
     int max;
     int height;
@@ -24,24 +24,27 @@ defmodule Interval.Node do
 
   alias Interval.Node
 
-  defstruct max: -1, # max interval finish value given the subtree rooted at this node
-  height: -1, # height value
-  data: nil,  # interval low, interval high
-  left: nil, 
-  right: nil
+  # max interval finish value given the subtree rooted at this node
+  defstruct max: -1,
+            # height value
+            height: -1,
+            # interval low, interval high
+            data: nil,
+            left: nil,
+            right: nil
 
-  
   @doc "Provides dump of node info to be used in Inspect protocol implementation"
-  def info(%Node{} = node) do {node.data, node.max, node.left, node.right} end
-  
-  
+  def info(%Node{} = node) do
+    {node.data, node.max, node.left, node.right}
+  end
+
   # Allows users to inspect this module type in a controlled manner
   defimpl Inspect do
     import Inspect.Algebra
-    
+
     def inspect(t, opts) do
       info = Inspect.Tuple.inspect(Node.info(t), opts)
-      concat ["", info, ""]
+      concat(["", info, ""])
     end
   end
 end

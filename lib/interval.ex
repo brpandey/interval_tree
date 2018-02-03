@@ -1,23 +1,19 @@
 defmodule Interval do
-
   defstruct start: -1, finish: -1
-
 
   @doc "Create new interval given start time and finish"
   def new({start, finish})
-  when is_integer(start) and is_integer(finish) and start <= finish do
+      when is_integer(start) and is_integer(finish) and start <= finish do
     %Interval{start: start, finish: finish}
   end
-
 
   @doc """
   Handles all the interval overlap cases for two intervals.
   Note: The interval order doesn't matter, as to which timeslot is t1 or t2
   """
   def overlap?(%Interval{} = t1, %Interval{} = t2) do
-    
     # This handles these cases
-    
+
     # 1)
     #     X------Y
     #         A-----B
@@ -34,22 +30,22 @@ defmodule Interval do
     # 5) and non-overlapping case
     #     X------Y            M-----N
     #               A-----B
-    
+
     # Periods that just touch each other e.g. t1.finish = 2:00
     # and t2.start = 2:00 are not considered overlapping
-    
+
     # Thus we don't use <= but instead < or conversely, >= but instead >
-    
+
     cond do
-      (t1.start < t2.finish and t1.finish > t2.start) -> true
-      true -> false 
-    end    
+      t1.start < t2.finish and t1.finish > t2.start -> true
+      true -> false
+    end
   end
 
-
   @doc "Provides dump of interval info to be used in Inspect protocol implementation"
-  def info(%Interval{} = round) do round.start..round.finish end
-
+  def info(%Interval{} = round) do
+    round.start..round.finish
+  end
 
   # Allows users to inspect this module type in a controlled manner
   defimpl Inspect do
@@ -57,9 +53,7 @@ defmodule Interval do
 
     def inspect(t, opts) do
       info = Inspect.Range.inspect(Interval.info(t), opts)
-      concat ["", info, ""]
+      concat(["", info, ""])
     end
   end
-
-
 end
